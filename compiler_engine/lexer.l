@@ -30,48 +30,67 @@ extern int lexer_error;
     printf("TOKEN: KEYWORD (else)\n");
     return ELSE;
 }
+
 "while" {
     printf("TOKEN: KEYWORD (while)\n");
     return WHILE;
 }
+
 "for" {
     printf("TOKEN: KEYWORD (for)\n");
     return FOR;
 }
+
 "printf" {
     printf("TOKEN: KEYWORD (printf)\n");
     return PRINTF;
 }
 
+
+/* Single-line comment */
 "//".* {
-    /* Ignore single-line comment */
+    /* Ignore comment */
 }
 
+
+/* Multi-line comment */
 "/*"([^*]|\*+[^*/])*\*+"/" {
-    /* Ignore multi-line comment */
+    /* Ignore comment */
 }
+
+
+/* String */
 \"([^\"\\]|\\.)*\" {
     printf("TOKEN: STRING (%s)\n", yytext);
     yylval.identifier = strdup(yytext);
     return STRING;
 }
 
+
+/* Comma */
 "," {
     printf("TOKEN: PUNCTUATION (,)\n");
     return COMMA;
 }
 
+
+/* Identifier */
 [a-zA-Z_][a-zA-Z0-9_]* {
     printf("TOKEN: IDENTIFIER (%s)\n", yytext);
     yylval.identifier = strdup(yytext);
     return IDENTIFIER;
 }
 
+
+/* Number */
 [0-9]+ {
     printf("TOKEN: NUMBER (%s)\n", yytext);
     yylval.number = atoi(yytext);
     return NUMBER;
 }
+
+
+/* Operators */
 
 "+" {
     printf("TOKEN: OPERATOR (+)\n");
@@ -128,6 +147,9 @@ extern int lexer_error;
     return ASSIGN;
 }
 
+
+/* Punctuation */
+
 ";" {
     printf("TOKEN: PUNCTUATION (;)\n");
     return SEMI;
@@ -153,10 +175,14 @@ extern int lexer_error;
     return RPAREN;
 }
 
+
+/* Whitespace */
 [ \t\n\r]+ {
     /* Ignore whitespace */
 }
 
+
+/* Unknown character */
 . {
     fprintf(
         stderr,
