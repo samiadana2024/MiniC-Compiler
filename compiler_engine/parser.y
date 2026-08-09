@@ -851,6 +851,8 @@ ExecutionResult execute_statements(Statement *stmt)
 %token MINUS
 %token MUL
 %token DIV
+%token INC
+%token DEC
 
 %token ASSIGN
 
@@ -1344,15 +1346,50 @@ for_update:
                 STMT_ASSIGNMENT
             );
 
-        stmt->name =
-            strdup($1);
-
+        stmt->name = strdup($1);
         stmt->expr = $3;
 
         $$ = stmt;
     }
-;
 
+    | IDENTIFIER INC
+    {
+        Statement *stmt =
+            create_statement(
+                STMT_ASSIGNMENT
+            );
+
+        stmt->name = strdup($1);
+
+        stmt->expr =
+            create_binary(
+                EXPR_ADD,
+                create_variable($1),
+                create_number(1)
+            );
+
+        $$ = stmt;
+    }
+
+    | IDENTIFIER DEC
+    {
+        Statement *stmt =
+            create_statement(
+                STMT_ASSIGNMENT
+            );
+
+        stmt->name = strdup($1);
+
+        stmt->expr =
+            create_binary(
+                EXPR_SUB,
+                create_variable($1),
+                create_number(1)
+            );
+
+        $$ = stmt;
+    }
+;
 
 /* =========================================================
    EXPRESSIONS

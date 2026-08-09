@@ -77,35 +77,44 @@ extern int lexer_error;
 }
 
 "==" {
-    printf("TOKEN: OPERATOR (==)\n");
-    return EQ;
+printf("TOKEN: OPERATOR (==)\n");
+return EQ;
 }
 
 "!=" {
-    printf("TOKEN: OPERATOR (!=)\n");
-    return NEQ;
+printf("TOKEN: OPERATOR (!=)\n");
+return NEQ;
 }
 
 "<=" {
-    printf("TOKEN: OPERATOR (<=)\n");
-    return LE;
+printf("TOKEN: OPERATOR (<=)\n");
+return LE;
 }
 
 ">=" {
-    printf("TOKEN: OPERATOR (>=)\n");
-    return GE;
+printf("TOKEN: OPERATOR (>=)\n");
+return GE;
+}
+
+"++" {
+printf("TOKEN: OPERATOR (++)\n");
+return INC;
+}
+
+"--" {
+printf("TOKEN: OPERATOR (--)\n");
+return DEC;
 }
 
 "+" {
-    printf("TOKEN: OPERATOR (+)\n");
-    return PLUS;
+printf("TOKEN: OPERATOR (+)\n");
+return PLUS;
 }
 
 "-" {
-    printf("TOKEN: OPERATOR (-)\n");
-    return MINUS;
+printf("TOKEN: OPERATOR (-)\n");
+return MINUS;
 }
-
 "*" {
     printf("TOKEN: OPERATOR (*)\n");
     return MUL;
