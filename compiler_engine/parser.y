@@ -463,14 +463,23 @@ case STMT_PRINTF:
     {
         size_t len = strlen(stmt->name);
 
-        if (len >= 2 &&
-            stmt->name[0] == '"' &&
-            stmt->name[len - 1] == '"')
-        {
-            /* Remove surrounding quotes */
-            stmt->name[len - 1] = '\0';
+       if (len >= 2 &&
+    stmt->name[0] == '"' &&
+    stmt->name[len - 1] == '"')
+{
+    /*
+     * Do NOT modify stmt->name.
+     * printf() can execute multiple times inside loops.
+     */
+    char format[2048];
 
-            char *format = stmt->name + 1;
+    size_t format_len = len - 2;
+
+    if (format_len >= sizeof(format))
+        format_len = sizeof(format) - 1;
+
+    strncpy(format, stmt->name + 1, format_len);
+    format[format_len] = '\0';
 
             /*
              * printf("Hello");
