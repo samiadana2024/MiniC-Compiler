@@ -10,7 +10,7 @@ extern int yylineno;
 extern FILE *yyin;
 
 void yyerror(const char *s);
-
+void print_format_string(const char *format);
 
 /* =========================================================
    VARIABLE TABLE
@@ -100,20 +100,14 @@ typedef struct Expr
 typedef enum
 {
     STMT_EMPTY,
-
     STMT_DECLARATION,
     STMT_ASSIGNMENT,
-
     STMT_RETURN,
-
+    STMT_PRINTF,
     STMT_BLOCK,
-
     STMT_IF,
-
     STMT_WHILE,
-
     STMT_FOR
-
 } StmtType;
 
 
@@ -459,8 +453,93 @@ ExecutionResult execute_statement(Statement *stmt)
             );
 
             break;
+/* -------------------------------------------------
+   PRINTF
+   ------------------------------------------------- */
 
+case STMT_PRINTF:
+{
+    if (stmt->name != NULL)
+    {
+        size_t len = strlen(stmt->name);
 
+        if (len >= 2 &&
+            stmt->name[0] == '"' &&
+            stmt->name[len - 1] == '"')
+        {
+            /* Remove surrounding quotes */
+            stmt->name[len - 1] = '\0';
+
+            char *format = stmt->name + 1;
+
+            /*
+             * printf("Hello");
+             */
+            if (stmt->expr == NULL)
+            {
+                print_format_string(format);
+            }
+
+            /*
+             * printf("Value = %d", a);
+             */
+            else
+            {
+                int value =
+                    evaluate_expression(stmt->expr);
+
+                char *percent =
+                    strstr(format, "%d");
+
+                if (percent != NULL)
+                {
+                    /*
+                     * Print text before %d
+                     */
+                    size_t before_len =
+                        percent - format;
+
+                    char before[1024];
+
+                    if (before_len >= sizeof(before))
+                    {
+                        before_len = sizeof(before) - 1;
+                    }
+
+                    strncpy(
+                        before,
+                        format,
+                        before_len
+                    );
+
+                    before[before_len] = '\0';
+
+                    print_format_string(before);
+
+                    /*
+                     * Print integer value
+                     */
+                    printf("%d", value);
+
+                    /*
+                     * Print text after %d
+                     */
+                    print_format_string(percent + 2);
+                }
+                else
+                {
+                    /*
+                     * No %d found.
+                     * Just print the string.
+                     */
+                    print_format_string(format);
+                }
+            }
+        }
+    }
+
+    break;
+}
         /* -------------------------------------------------
            BLOCK
            ------------------------------------------------- */
@@ -639,7 +718,46 @@ ExecutionResult execute_statement(Statement *stmt)
 
     return result;
 }
+void print_format_string(const char *format)
+{
+    for (int i = 0; format[i] != '\0'; i++)
+    {
+        if (format[i] == '\\')
+        {
+            i++;
 
+            if (format[i] == 'n')
+            {
+                putchar('\n');
+            }
+            else if (format[i] == 't')
+            {
+                putchar('\t');
+            }
+            else if (format[i] == '\\')
+            {
+                putchar('\\');
+            }
+            else if (format[i] == '"')
+            {
+                putchar('"');
+            }
+            else
+            {
+                putchar('\\');
+
+                if (format[i] != '\0')
+                {
+                    putchar(format[i]);
+                }
+            }
+        }
+        else
+        {
+            putchar(format[i]);
+        }
+    }
+}
 
 /* =========================================================
    EXECUTE STATEMENT LIST
@@ -711,6 +829,7 @@ ExecutionResult execute_statements(Statement *stmt)
 
 %token INT
 %token RETURN
+%token PRINTF
 
 %token IF
 %token ELSE
@@ -721,9 +840,12 @@ ExecutionResult execute_statements(Statement *stmt)
 
 
 %token <identifier> IDENTIFIER
+%token <identifier> STRING
 
 %token <number> NUMBER
 
+%token SEMI
+%token COMMA
 
 %token PLUS
 %token MINUS
@@ -732,17 +854,12 @@ ExecutionResult execute_statements(Statement *stmt)
 
 %token ASSIGN
 
-
 %token LT
 %token GT
 %token LE
 %token GE
 %token EQ
 %token NEQ
-
-
-%token SEMI
-
 
 %token LBRACE
 %token RBRACE
@@ -765,7 +882,7 @@ ExecutionResult execute_statements(Statement *stmt)
 %type <stmt> declaration
 %type <stmt> assignment
 %type <stmt> return_stmt
-
+%type <stmt> printf_stmt
 %type <stmt> if_stmt
 %type <stmt> while_stmt
 
@@ -863,6 +980,11 @@ statement:
         $$ = $1;
     }
 
+    | printf_stmt
+    {
+        $$ = $1;
+    }
+
     | block
     {
         $$ = $1;
@@ -883,7 +1005,6 @@ statement:
         $$ = $1;
     }
 ;
-
 
 /* =========================================================
    BLOCK
@@ -1009,7 +1130,42 @@ return_stmt:
         $$ = stmt;
     }
 ;
+/* =========================================================
+   PRINTF
+   ========================================================= */
 
+printf_stmt:
+
+    PRINTF LPAREN STRING RPAREN SEMI
+    {
+        Statement *stmt =
+            create_statement(
+                STMT_PRINTF
+            );
+
+        stmt->name =
+            strdup($3);
+
+        stmt->expr = NULL;
+
+        $$ = stmt;
+    }
+
+    | PRINTF LPAREN STRING COMMA expression RPAREN SEMI
+    {
+        Statement *stmt =
+            create_statement(
+                STMT_PRINTF
+            );
+
+        stmt->name =
+            strdup($3);
+
+        stmt->expr = $5;
+
+        $$ = stmt;
+    }
+;
 
 /* =========================================================
    IF / ELSE

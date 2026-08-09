@@ -38,6 +38,10 @@ extern int lexer_error;
     printf("TOKEN: KEYWORD (for)\n");
     return FOR;
 }
+"printf" {
+    printf("TOKEN: KEYWORD (printf)\n");
+    return PRINTF;
+}
 
 "//".* {
     /* Ignore single-line comment */
@@ -45,6 +49,16 @@ extern int lexer_error;
 
 "/*"([^*]|\*+[^*/])*\*+"/" {
     /* Ignore multi-line comment */
+}
+\"([^\"\\]|\\.)*\" {
+    printf("TOKEN: STRING (%s)\n", yytext);
+    yylval.identifier = strdup(yytext);
+    return STRING;
+}
+
+"," {
+    printf("TOKEN: PUNCTUATION (,)\n");
+    return COMMA;
 }
 
 [a-zA-Z_][a-zA-Z0-9_]* {
