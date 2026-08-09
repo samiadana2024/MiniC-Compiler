@@ -7,7 +7,8 @@
 extern int lexer_error;
 %}
 
-%option noyywrap yylineno
+%option noyywrap
+%option yylineno
 
 %%
 
@@ -46,70 +47,33 @@ extern int lexer_error;
     return PRINTF;
 }
 
-
-/* Single-line comment */
-"//".* {
-    /* Ignore comment */
+\/\/[^\n]* {
 }
 
-
-/* Multi-line comment */
-"/*"([^*]|\*+[^*/])*\*+"/" {
-    /* Ignore comment */
+\/\*([^*]|\*+[^*/])*\*+\/ {
 }
 
-
-/* String */
 \"([^\"\\]|\\.)*\" {
     printf("TOKEN: STRING (%s)\n", yytext);
     yylval.identifier = strdup(yytext);
     return STRING;
 }
 
-
-/* Comma */
 "," {
     printf("TOKEN: PUNCTUATION (,)\n");
     return COMMA;
 }
 
-
-/* Identifier */
 [a-zA-Z_][a-zA-Z0-9_]* {
     printf("TOKEN: IDENTIFIER (%s)\n", yytext);
     yylval.identifier = strdup(yytext);
     return IDENTIFIER;
 }
 
-
-/* Number */
 [0-9]+ {
     printf("TOKEN: NUMBER (%s)\n", yytext);
     yylval.number = atoi(yytext);
     return NUMBER;
-}
-
-
-/* Operators */
-
-"+" {
-    printf("TOKEN: OPERATOR (+)\n");
-    return PLUS;
-}
-
-"-" {
-    printf("TOKEN: OPERATOR (-)\n");
-    return MINUS;
-}
-
-"*" {
-    printf("TOKEN: OPERATOR (*)\n");
-    return MUL;
-}
-
-"/" {
-    printf("TOKEN: OPERATOR (/)\n");
-    return DIV;
 }
 
 "==" {
@@ -132,6 +96,26 @@ extern int lexer_error;
     return GE;
 }
 
+"+" {
+    printf("TOKEN: OPERATOR (+)\n");
+    return PLUS;
+}
+
+"-" {
+    printf("TOKEN: OPERATOR (-)\n");
+    return MINUS;
+}
+
+"*" {
+    printf("TOKEN: OPERATOR (*)\n");
+    return MUL;
+}
+
+"/" {
+    printf("TOKEN: OPERATOR (/)\n");
+    return DIV;
+}
+
 "<" {
     printf("TOKEN: OPERATOR (<)\n");
     return LT;
@@ -146,9 +130,6 @@ extern int lexer_error;
     printf("TOKEN: OPERATOR (=)\n");
     return ASSIGN;
 }
-
-
-/* Punctuation */
 
 ";" {
     printf("TOKEN: PUNCTUATION (;)\n");
@@ -175,14 +156,9 @@ extern int lexer_error;
     return RPAREN;
 }
 
-
-/* Whitespace */
-[ \t\n\r]+ {
-    /* Ignore whitespace */
+[ \t\r\n]+ {
 }
 
-
-/* Unknown character */
 . {
     fprintf(
         stderr,
