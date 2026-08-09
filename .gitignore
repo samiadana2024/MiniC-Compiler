@@ -1,0 +1,12 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+*.exe
+staticfiles/
+.idea/
+
+compiler_engine/lex.yy.c
+compiler_engine/parser.tab.c
+compiler_engine/parser.tab.h

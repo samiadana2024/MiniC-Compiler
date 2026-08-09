@@ -1,0 +1,56 @@
+:root {
+    --bg-dark: #1e1e2e;
+    --bg-panel: #282a36;
+    --text-main: #f8f8f2;
+    --accent: #bd93f9;
+    --error: #ff5555;
+    --success: #50fa7b;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+}
+
+.container { display: flex; flex-direction: column; height: 100vh; }
+
+header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 2rem; background-color: var(--bg-panel); border-bottom: 1px solid #44475a;
+}
+
+.btn {
+    padding: 0.5rem 1rem; border: none; border-radius: 4px;
+    cursor: pointer; font-weight: bold; margin-left: 0.5rem;
+}
+
+.btn.primary { background-color: var(--accent); color: #282a36; }
+.btn.secondary { background-color: #44475a; color: var(--text-main); }
+
+.ide-layout { display: flex; flex: 1; overflow: hidden; }
+.editor-pane, .output-pane { flex: 1; display: flex; flex-direction: column; border-right: 1px solid #44475a; }
+.pane-header { padding: 0.5rem 1rem; background-color: #44475a; font-size: 0.9rem; font-weight: bold; }
+
+.CodeMirror { flex: 1; height: auto; font-family: 'Fira Code', monospace; font-size: 14px; }
+
+.tabs { display: flex; background-color: var(--bg-panel); }
+.tab-btn {
+    flex: 1; padding: 0.5rem; background: none; border: none;
+    border-bottom: 2px solid transparent; color: var(--text-main); cursor: pointer;
+}
+.tab-btn.active { border-bottom-color: var(--accent); }
+
+.tab-content {
+    display: none; flex: 1; padding: 1rem; overflow-y: auto; background-color: var(--bg-dark);
+}
+.tab-content.active { display: block; }
+
+pre { margin: 0; font-family: 'Courier New', monospace; white-space: pre-wrap; }
+
+.badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; }
+.badge.idle { background-color: #6272a4; }
+.badge.compiling { background-color: #f1fa8c; color: #282a36; }
+.badge.success { background-color: var(--success); color: #282a36; }
+.badge.error { background-color: var(--error); color: #282a36; }

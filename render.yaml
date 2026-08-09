@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: minic-compiler
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn online_compiler.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"

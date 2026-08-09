@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniC Compiler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MiniC Compiler</h1>
+            <div class="controls">
+                <button id="btn-compile" class="btn primary">Compile Code</button>
+                <button id="btn-clear" class="btn secondary">Clear</button>
+            </div>
+        </header>
+
+        <main class="ide-layout">
+            <div class="editor-pane">
+                <div class="pane-header">Source Code</div>
+                <textarea id="code-editor"></textarea>
+            </div>
+
+            <div class="output-pane">
+                <div class="pane-header">Status: <span id="status-badge" class="badge idle">Ready</span></div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-target="out-compiler">Output</button>
+                    <button class="tab-btn" data-target="out-tokens">Tokens</button>
+                    <button class="tab-btn" data-target="out-errors">Errors</button>
+                </div>
+
+                <div class="tab-content active" id="out-compiler">
+                    <pre id="output-text">Compiler output will appear here...</pre>
+                </div>
+                <div class="tab-content" id="out-tokens">
+                    <pre id="tokens-text">Lexical tokens will appear here...</pre>
+                </div>
+                <div class="tab-content" id="out-errors">
+                    <pre id="errors-text">Syntax/Lexical errors will appear here...</pre>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
